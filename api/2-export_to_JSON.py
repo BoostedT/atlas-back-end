@@ -1,39 +1,20 @@
 #!/usr/bin/python3
-""" Export all employees' TODO data in JSON format """
 
 import json
 import requests
+import sys
 
-if __name__ == "__main__":
-    # Base URL for API requests
-    base_url = "https://jsonplaceholder.typicode.com"
+def export_to_JSON():
+    """Export data to JSON format"""
+    user_id = sys.argv[1]
+    url = f"https://jsonplaceholder.typicode.com/users/{user_id}"
+    user = requests.get(url + "users/{}".format(user_id)).json()
+    username = user.get("username")
+    todos = requests.get(url + "todos", params={"userId": user_id}).json()
 
-    # Fetch all users
-    users = requests.get(f"{base_url}/users").json()
-    data = {}
-
-    # Process each user
-    for user in users:
-        user_id = user.get("id")
-        username = user.get("username")
-
-        # Fetch TODOs for the current user
-        todos = requests.get(
-            f"{base_url}/todos", params={"userId": user_id}
-        ).json()
-
-        # Add user's TODO tasks to data
-        data[user_id] = [
-            {
-                "task": todo.get("title"),
-                "completed": todo.get("completed"),
-                "username": username
-            }
-            for todo in todos
-        ]
-
-    # Write all data to JSON file
-    with open("todo_all_employees.json", "w") as jsonfile:
-        json.dump(data, jsonfile, indent=4)
-
-    print("Data exported to todo_all_employees.json")
+    with open("{}.json".format(user_id), "w") as jsonfile:
+        json.dump({user_id: [{
+            "task": todo.get("title"),
+            "completed": todo.get("completed"),
+            "username": username
+        } for todo in todos]}, jsonfile)
