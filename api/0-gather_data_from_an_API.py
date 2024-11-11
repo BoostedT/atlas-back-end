@@ -16,7 +16,8 @@ def fetch_employee_todo_progress(employee_id):
         employee_response.raise_for_status()
         employee_data = employee_response.json()
 
-        print("Debug: Full Employee Data Fetched:", employee_data)  # Debug line
+        print(
+            f"Debug: Full Employee Data Fetched:", employee_data)
 
         # Extract employee name and confirm its presence
         if 'name' in employee_data:
