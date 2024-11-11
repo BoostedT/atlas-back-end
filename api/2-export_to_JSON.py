@@ -18,3 +18,6 @@ def export_to_JSON():
             "completed": todo.get("completed"),
             "username": username
         } for todo in todos]}, jsonfile)
+
+if __name__ == "__main__":
+    export_to_JSON()
