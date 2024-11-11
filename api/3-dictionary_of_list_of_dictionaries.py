@@ -8,19 +8,14 @@ import sys
 if __name__ == "__main__":
     url = "https://jsonplaceholder.typicode.com/"
     users = requests.get(url + "users").json()
-    todos = requests.get(url + "todos").json()
-
-    user_dict = {}
-    for user in users:
-        user_id = user.get("id")
-        user_dict[user_id] = []
-        for todo in todos:
-            if todo.get("userId") == user_id:
-                user_dict[user_id].append({
-                    "task": todo.get("title"),
-                    "completed": todo.get("completed"),
-                    "username": user.get("username")
-                })
 
     with open("todo_all_employees.json", "w") as jsonfile:
-        json.dump(user_dict, jsonfile)
+        json.dump({
+            user.get("id"): [{
+                "task": task.get("title"),
+                "completed": task.get("completed"),
+                "username": user.get("username")
+            } for task in requests.get(url + "todos",
+                                       params={"userId": user.get("id")}).json()]
+            for user in users
+        }, jsonfile)
