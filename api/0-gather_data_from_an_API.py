@@ -16,10 +16,9 @@ def fetch_employee_todo_progress(employee_id):
         employee_response.raise_for_status()
         employee_data = employee_response.json()
 
-        #extracting the name of the employee
+        # extracting the name of the employee
         employee_name = employee_data.get('name', 'Unknown')
 
-        
         # Fetch TODO list for the employee
         todos_url = (
             f"https://jsonplaceholder.typicode.com/users/{employee_id}/todos"
