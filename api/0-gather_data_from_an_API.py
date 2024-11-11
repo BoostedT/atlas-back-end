@@ -9,14 +9,18 @@ def fetch_employee_todo_progress(employee_id):
     """ Fetch employee data and TODO list from a given employee ID """
     try:
         # Fetch employee data
-        employee_url = f"https://jsonplaceholder.typicode.com/users/{employee_id}"
+        employee_url = (
+            f"https://jsonplaceholder.typicode.com/users/{employee_id}"
+        )
         employee_response = requests.get(employee_url)
         employee_response.raise_for_status()
         employee_data = employee_response.json()
         employee_name = employee_data['name']
 
         # Fetch TODO list for the employee
-        todos_url = f"https://jsonplaceholder.typicode.com/users/{employee_id}/todos"
+        todos_url = (
+            f"https://jsonplaceholder.typicode.com/users/{employee_id}/todos"
+        )
         todos_response = requests.get(todos_url)
         todos_response.raise_for_status()
         todos = todos_response.json()
@@ -27,7 +31,10 @@ def fetch_employee_todo_progress(employee_id):
         done_tasks_count = len(completed_tasks)
 
         # Print output in the specified format
-        print(f"Employee {employee_name} is done with tasks({done_tasks_count}/{total_tasks}):")
+        print(
+            f"Employee {employee_name} is done with tasks"
+            f"({done_tasks_count}/{total_tasks}):"
+        )
         for task in completed_tasks:
             print(f"\t {task['title']}")
 
@@ -35,6 +42,7 @@ def fetch_employee_todo_progress(employee_id):
         print(f"Error fetching data: {e}")
     except KeyError as e:
         print(f"Unexpected data format: missing key {e}")
+
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
