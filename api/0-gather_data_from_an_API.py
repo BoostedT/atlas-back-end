@@ -15,7 +15,15 @@ def fetch_employee_todo_progress(employee_id):
         employee_response = requests.get(employee_url)
         employee_response.raise_for_status()
         employee_data = employee_response.json()
-        employee_name = employee_data['name']
+
+        print("Debug: Full Employee Data Fetched:", employee_data)  # Debug line
+
+        # Extract employee name and confirm its presence
+        if 'name' in employee_data:
+            employee_name = employee_data['name']
+        else:
+            print("Error: 'name' key not found in employee data.")
+            employee_name = "Unknown"
 
         # Fetch TODO list for the employee
         todos_url = (
