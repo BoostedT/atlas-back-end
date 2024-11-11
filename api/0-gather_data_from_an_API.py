@@ -1,31 +1,47 @@
 #!/usr/bin/python3
-"""Using a REST API, for a given employee ID, returns information about his/her
-TODO list progress"""
+""" Fetch employee data and TODO list from a given employee ID """
 
-from requests import get
-from sys import argv
+import requests
+import sys
+
+
+def fetch_employee_todo_progress(employee_id):
+    """ Fetch employee data and TODO list from a given employee ID """
+    try:
+        # Fetch employee data
+        employee_url = f"https://jsonplaceholder.typicode.com/users/{employee_id}"
+        employee_response = requests.get(employee_url)
+        employee_response.raise_for_status()
+        employee_data = employee_response.json()
+        employee_name = employee_data['name']
+
+        # Fetch TODO list for the employee
+        todos_url = f"https://jsonplaceholder.typicode.com/users/{employee_id}/todos"
+        todos_response = requests.get(todos_url)
+        todos_response.raise_for_status()
+        todos = todos_response.json()
+
+        # Calculate tasks done and total tasks
+        completed_tasks = [task for task in todos if task['completed']]
+        total_tasks = len(todos)
+        done_tasks_count = len(completed_tasks)
+
+        # Print output in the specified format
+        print(f"Employee {employee_name} is done with tasks({done_tasks_count}/{total_tasks}):")
+        for task in completed_tasks:
+            print(f"\t {task['title']}")
+
+    except requests.exceptions.RequestException as e:
+        print(f"Error fetching data: {e}")
+    except KeyError as e:
+        print(f"Unexpected data format: missing key {e}")
 
 if __name__ == "__main__":
-   response = get('https://jsonplaceholder.typicode.com/todos/')
-   data = response.json()
-   completed = 0
-   total = 0
-   tasks = []
-   response2 = get('https://jsonplaceholder.typicode.com/users/')
-   data2 = response2.json()
-
-for user in data2:
-    if user.get('id') == int(argv[1]):
-        employee = user.get('name')
-    
-for task in data:
-    if task.get('userId') == int(argv[1]):
-        total += 1
-        if task.get('completed') is True:
-            completed += 1
-            tasks.append(task.get('title'))
-
-print("Employee {} is done with tasks({}/{}):".format(employee, completed, total))
-
-for T in tasks:
-    print("\t {}".format(T))
+    if len(sys.argv) != 2:
+        print("Usage: python script_name.py <employee_id>")
+    else:
+        try:
+            employee_id = int(sys.argv[1])
+            fetch_employee_todo_progress(employee_id)
+        except ValueError:
+            print("Employee ID must be an integer.")
